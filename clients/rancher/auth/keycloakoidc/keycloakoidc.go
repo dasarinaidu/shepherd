@@ -8,6 +8,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"math/big"
+	"strings"
 	"time"
 
 	management "github.com/rancher/shepherd/clients/rancher/generated/management/v3"
@@ -18,6 +19,7 @@ import (
 type Operations interface {
 	Enable() error
 	Disable() error
+	CompleteOAuthFlow(code string) error
 	Update(existing, updates *management.AuthConfig) (*management.AuthConfig, error)
 }
 
@@ -44,11 +46,11 @@ func NewKeycloakOIDC(client *management.Client, session *session.Session) (*Clie
 	}, nil
 }
 
-// Enable is a method of KeycloakOIDC, makes a request to the action with the given
-// configuration values
+// Enable is a method of KeycloakOIDC, makes a request to configure and validate the OIDC settings
+// Note: This creates the configuration but does not fully enable (requires OAuth flow)
 func (k *Client) Enable() error {
 	var jsonResp map[string]interface{}
-	url := k.newActionURL("testAndApply")
+	url := k.newActionURL("configureTest")
 
 	enableActionInput, err := k.newEnableInputFromConfig()
 	if err != nil {
@@ -67,25 +69,56 @@ func (k *Client) Enable() error {
 	return nil
 }
 
-// Update is a method of KeycloakOIDC, makes an update with the given configuration values
-func (k *Client) Update(
-	existing, updates *management.AuthConfig,
-) (*management.AuthConfig, error) {
-	return k.client.AuthConfig.Update(existing, updates)
+// CompleteOAuthFlow completes the OIDC setup with the OAuth authorization code
+// This is called after the user completes the OAuth flow in the browser
+func (k *Client) CompleteOAuthFlow(code string) error {
+	var jsonResp map[string]interface{}
+	url := k.newActionURL("testAndApply")
+
+	configInput, err := k.newEnableInputFromConfig()
+	if err != nil {
+		return err
+	}
+
+	// Wrap in the structure Rancher expects for testAndApply
+	applyInput := map[string]interface{}{
+		"enabled":    true,
+		"code":       code,
+		"oidcConfig": configInput,
+	}
+
+	return k.client.Ops.DoModify("POST", url, applyInput, &jsonResp)
 }
 
 // Disable is a method of KeycloakOIDC, makes a request to disable Keycloak OIDC
 func (k *Client) Disable() error {
-	var jsonResp map[string]any
-	url := k.newActionURL("disable")
-	disableActionInput := k.newDisableInput()
+	authConfig, err := k.client.AuthConfig.ByID(resourceType)
+	if err != nil {
+		// If config doesn't exist, nothing to disable
+		if strings.Contains(err.Error(), "404") || strings.Contains(err.Error(), "NotFound") {
+			return nil
+		}
+		return fmt.Errorf("failed to get auth config: %w", err)
+	}
 
-	return k.client.Ops.DoModify("POST", url, &disableActionInput, &jsonResp)
+	authConfig.Enabled = false
+	_, err = k.client.AuthConfig.Update(authConfig, authConfig)
+	if err != nil {
+		return fmt.Errorf("failed to disable auth config: %w", err)
+	}
+
+	return nil
 }
 
+// Update is a method of KeycloakOIDC, makes a request to update an auth config.
+func (k *Client) Update(existing, updates *management.AuthConfig) (*management.AuthConfig, error) {
+	return k.client.AuthConfig.Update(existing, updates)
+}
+
+// newActionURL constructs the API URL for a given action
 func (k *Client) newActionURL(action string) string {
 	return fmt.Sprintf(
-		"%v/%v/%v?action=%v",
+		"%s/%s/%s?action=%s",
 		k.client.Opts.URL,
 		schemaType,
 		resourceType,
@@ -133,6 +166,11 @@ func (k *Client) newEnableInputFromConfig() (map[string]interface{}, error) {
 	scopes := k.Config.Scopes
 	if scopes == "" {
 		scopes = "openid profile email"
+	} else {
+		// Ensure openid is always present
+		if !strings.Contains(scopes, "openid") {
+			scopes = "openid " + scopes
+		}
 	}
 
 	usernameClaim := k.Config.UsernameClaim
@@ -145,7 +183,7 @@ func (k *Client) newEnableInputFromConfig() (map[string]interface{}, error) {
 		groupsClaim = "groups"
 	}
 
-	// Create the configuration as a map to avoid type issues
+	// Create the configuration as a map
 	enableInput := map[string]interface{}{
 		"enabled":            true,
 		"accessMode":         k.Config.AccessMode,
@@ -163,12 +201,6 @@ func (k *Client) newEnableInputFromConfig() (map[string]interface{}, error) {
 	}
 
 	return enableInput, nil
-}
-
-func (k *Client) newDisableInput() map[string]interface{} {
-	return map[string]interface{}{
-		"enabled": false,
-	}
 }
 
 // generateSelfSignedCert generates a self-signed certificate and private key for OIDC
@@ -194,7 +226,7 @@ func generateSelfSignedCert() (string, string, error) {
 	}
 
 	// Create certificate
-	certBytes, err := x509.CreateCertificate(rand.Reader, &template, &template, &privateKey.PublicKey, privateKey)
+	certDER, err := x509.CreateCertificate(rand.Reader, &template, &template, &privateKey.PublicKey, privateKey)
 	if err != nil {
 		return "", "", fmt.Errorf("failed to create certificate: %w", err)
 	}
@@ -208,7 +240,7 @@ func generateSelfSignedCert() (string, string, error) {
 	// Encode certificate to PEM
 	certPEM := pem.EncodeToMemory(&pem.Block{
 		Type:  "CERTIFICATE",
-		Bytes: certBytes,
+		Bytes: certDER,
 	})
 
 	return string(privateKeyPEM), string(certPEM), nil
