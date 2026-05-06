@@ -1,5 +1,5 @@
 /*
-Copyright 2025 Rancher Labs, Inc.
+Copyright 2026 Rancher Labs, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,12 +23,12 @@ import (
 	"github.com/rancher/shepherd/pkg/session"
 	"github.com/rancher/shepherd/pkg/wrangler/pkg/generic"
 	"github.com/rancher/wrangler/v3/pkg/schemes"
-	networkingv1 "k8s.io/api/networking/v1"
+	v1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 func init() {
-	schemes.Register(networkingv1.AddToScheme)
+	schemes.Register(v1.AddToScheme)
 }
 
 type Interface interface {
@@ -50,30 +50,13 @@ type version struct {
 }
 
 func (v *version) Ingress() IngressController {
-	return generic.NewController[*networkingv1.Ingress, *networkingv1.IngressList](
-		schema.GroupVersionKind{Group: "networking.k8s.io", Version: "v1", Kind: "Ingress"},
-		"ingresses",
-		true,
-		v.controllerFactory,
-		v.ts,
-	)
+	return generic.NewController[*v1.Ingress, *v1.IngressList](schema.GroupVersionKind{Group: "networking.k8s.io", Version: "v1", Kind: "Ingress"}, "ingresses", true, v.controllerFactory, v.ts)
 }
 
 func (v *version) IngressClass() IngressClassController {
-	return generic.NewNonNamespacedController[*networkingv1.IngressClass, *networkingv1.IngressClassList](
-		schema.GroupVersionKind{Group: "networking.k8s.io", Version: "v1", Kind: "IngressClass"},
-		"ingressclasses",
-		v.controllerFactory,
-		v.ts,
-	)
+	return generic.NewNonNamespacedController[*v1.IngressClass, *v1.IngressClassList](schema.GroupVersionKind{Group: "networking.k8s.io", Version: "v1", Kind: "IngressClass"}, "ingressclasses", v.controllerFactory, v.ts)
 }
 
 func (v *version) NetworkPolicy() NetworkPolicyController {
-	return generic.NewController[*networkingv1.NetworkPolicy, *networkingv1.NetworkPolicyList](
-		schema.GroupVersionKind{Group: "networking.k8s.io", Version: "v1", Kind: "NetworkPolicy"},
-		"networkpolicies",
-		true,
-		v.controllerFactory,
-		v.ts,
-	)
+	return generic.NewController[*v1.NetworkPolicy, *v1.NetworkPolicyList](schema.GroupVersionKind{Group: "networking.k8s.io", Version: "v1", Kind: "NetworkPolicy"}, "networkpolicies", true, v.controllerFactory, v.ts)
 }

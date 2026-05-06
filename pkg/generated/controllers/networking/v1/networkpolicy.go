@@ -1,5 +1,5 @@
 /*
-Copyright 2025 Rancher Labs, Inc.
+Copyright 2026 Rancher Labs, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,20 +20,20 @@ package v1
 
 import (
 	"github.com/rancher/shepherd/pkg/wrangler/pkg/generic"
-	networkingv1 "k8s.io/api/networking/v1"
+	v1 "k8s.io/api/networking/v1"
 )
 
 // NetworkPolicyController interface for managing NetworkPolicy resources.
 type NetworkPolicyController interface {
-	generic.ControllerInterface[*networkingv1.NetworkPolicy, *networkingv1.NetworkPolicyList]
+	generic.ControllerInterface[*v1.NetworkPolicy, *v1.NetworkPolicyList]
 }
 
 // NetworkPolicyClient interface for managing NetworkPolicy resources in Kubernetes.
 type NetworkPolicyClient interface {
-	generic.ClientInterface[*networkingv1.NetworkPolicy, *networkingv1.NetworkPolicyList]
+	generic.ClientInterface[*v1.NetworkPolicy, *v1.NetworkPolicyList]
 }
 
 // NetworkPolicyCache interface for retrieving NetworkPolicy resources in memory.
 type NetworkPolicyCache interface {
-	generic.CacheInterface[*networkingv1.NetworkPolicy]
+	generic.CacheInterface[*v1.NetworkPolicy]
 }
