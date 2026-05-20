@@ -2,7 +2,9 @@ package wait
 
 import (
 	"errors"
+	"fmt"
 
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/watch"
 )
 
@@ -37,11 +39,14 @@ func WatchWait(watchInterface watch.Interface, check WatchCheckFunc) error {
 	for {
 		select {
 		case event, open := <-watchInterface.ResultChan():
+			if event.Type == watch.Error {
+				if status, ok := event.Object.(*metav1.Status); ok {
+					return fmt.Errorf("%s: %s (reason=%s code=%d)", WatchConnectionError, status.Message, status.Reason, status.Code)
+				}
+				return fmt.Errorf("%s: unexpected event.Object type %T: %+v", WatchConnectionError, event.Object, event.Object)
+			}
 			if !open {
 				return errors.New(TimeoutError)
-			}
-			if event.Type == watch.Error {
-				return errors.New(WatchConnectionError)
 			}
 
 			done, err := check(event)
