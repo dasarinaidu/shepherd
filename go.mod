@@ -2,8 +2,6 @@ module github.com/rancher/shepherd
 
 go 1.25.0
 
-replace github.com/rancher/rancher/pkg/apis => github.com/bhartigautam156/rancher/pkg/apis v0.0.0-20260422040031-154631423168
-
 replace (
 	github.com/docker/distribution => github.com/docker/distribution v2.8.2+incompatible // rancher-machine requires a replace is set
 	k8s.io/client-go => k8s.io/client-go v0.35.4
@@ -26,20 +24,20 @@ require (
 	github.com/rancher/aks-operator v1.14.0-rc.2
 	github.com/rancher/apiserver v0.7.7
 	github.com/rancher/eks-operator v1.14.0-rc.5
-	github.com/rancher/fleet/pkg/apis v0.15.0-beta.4
+	github.com/rancher/fleet/pkg/apis v0.15.0
 	github.com/rancher/gke-operator v1.14.0-rc.3
 	github.com/rancher/lasso v0.2.7
 	github.com/rancher/norman v0.9.1
-	github.com/rancher/rancher/pkg/apis v0.0.0-20251107181200-efcbd5d43f4e
+	github.com/rancher/rancher/pkg/apis v0.0.0-20260520140148-1f22fcaec55b
 	github.com/rancher/system-upgrade-controller/pkg/apis v0.0.0-20250930163923-f2c9e60b1078
 	github.com/rancher/wrangler v1.1.2
-	github.com/rancher/wrangler/v3 v3.5.0
+	github.com/rancher/wrangler/v3 v3.6.0-rc.2
 	github.com/sirupsen/logrus v1.9.4
 	github.com/spf13/cobra v1.10.1
 	golang.org/x/crypto v0.49.0
 	gopkg.in/yaml.v2 v2.4.0
-	k8s.io/api v0.35.4
-	k8s.io/apimachinery v0.35.4
+	k8s.io/api v0.35.5
+	k8s.io/apimachinery v0.35.5
 	k8s.io/apiserver v0.35.4
 	k8s.io/cli-runtime v0.35.4
 	k8s.io/client-go v12.0.0+incompatible
@@ -120,7 +118,7 @@ require (
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/sys v0.42.0 // indirect
 	golang.org/x/term v0.41.0 // indirect
-	golang.org/x/text v0.35.0 // indirect
+	golang.org/x/text v0.36.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
 	golang.org/x/tools v0.43.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
