@@ -57,10 +57,15 @@ type SteveAPIObject struct {
 	Status          any `json:"status,omitempty" yaml:"status,omitempty"`
 }
 
+type SteveSummaryWithBreakdown struct {
+	Total     int            `json:"total"`
+	Namespace map[string]int `json:"namespace,omitempty" yaml:"namespace,omitempty"`
+}
+
 type SteveAPISummaryItem struct {
 	JSONResp map[string]any
-	Property string         `json:"property,omitempty"`
-	Counts   map[string]int `json:"counts,omitempty"`
+	Property string                               `json:"property,omitempty"`
+	Counts   map[string]SteveSummaryWithBreakdown `json:"counts,omitempty"`
 }
 
 // SteveCollection is the collection type of the SteveAPIObjects
