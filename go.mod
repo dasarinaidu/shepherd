@@ -5,16 +5,7 @@ go 1.26.0
 replace (
 	github.com/docker/distribution => github.com/docker/distribution v2.8.2+incompatible // rancher-machine requires a replace is set
 
-	github.com/rancher/aks-operator => github.com/rancher-teja/aks-operator v1.13.0-rc.1.0.20260506102828-d2c5e80a5223
-	github.com/rancher/ali-operator => github.com/rancher-teja/ali-operator v1.13.0-rc.1.0.20260506095922-b7708fdb3b3e
-	github.com/rancher/apiserver => github.com/rancher-teja/apiserver v0.9.3-0.20260505142445-469fb9388100
-	github.com/rancher/eks-operator => github.com/rancher-teja/eks-operator v1.14.0-rc.1.0.20260506090247-a9c11ffb810f
-	github.com/rancher/gke-operator => github.com/rancher-teja/gke-operator v1.14.0-rc.1.0.20260506092726-5ac4d5aeee7b
-	github.com/rancher/lasso => github.com/Abhishek-Valaboju/lasso v0.2.9-0.20260505081514-7d93f2343c4e
-	github.com/rancher/norman => github.com/rancher-teja/norman v0.9.3-0.20260505143155-552e07ef956f
-	github.com/rancher/system-upgrade-controller/pkg/apis => github.com/rancher-teja/system-upgrade-controller/pkg/apis v0.0.0-20260506055111-0f536b21d101
-	github.com/rancher/wrangler/v3 => github.com/rancher-teja/wrangler/v3 v3.6.0-rc.1.0.20260505124441-a4e31e7c8b59
-	k8s.io/client-go => k8s.io/client-go v0.36.0
+	k8s.io/client-go => k8s.io/client-go v0.36.1
 	sigs.k8s.io/cluster-api => sigs.k8s.io/cluster-api v1.12.2
 )
 
@@ -31,28 +22,28 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/pkg/sftp v1.13.5
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.52.0
-	github.com/rancher/aks-operator v1.14.0-rc.2
-	github.com/rancher/apiserver v0.7.7
-	github.com/rancher/eks-operator v1.14.0-rc.5
+	github.com/rancher/aks-operator v1.15.0-rc.1
+	github.com/rancher/apiserver v0.9.6
+	github.com/rancher/eks-operator v1.15.0-rc.1
 	github.com/rancher/fleet/pkg/apis v0.15.0
-	github.com/rancher/gke-operator v1.14.0-rc.3
-	github.com/rancher/lasso v0.2.8
-	github.com/rancher/norman v0.9.1
+	github.com/rancher/gke-operator v1.15.0-rc.1
+	github.com/rancher/lasso v0.2.9
+	github.com/rancher/norman v0.9.6
 	github.com/rancher/rancher/pkg/apis v0.0.0-20260520140148-1f22fcaec55b
-	github.com/rancher/system-upgrade-controller/pkg/apis v0.0.0-20250930163923-f2c9e60b1078
+	github.com/rancher/system-upgrade-controller/pkg/apis v0.0.0-20260519183600-f1362a3fe1a8
 	github.com/rancher/wrangler v1.1.2
-	github.com/rancher/wrangler/v3 v3.6.0-rc.2
+	github.com/rancher/wrangler/v3 v3.7.0
 	github.com/sirupsen/logrus v1.9.4
 	github.com/spf13/cobra v1.10.2
-	golang.org/x/crypto v0.50.0
+	golang.org/x/crypto v0.51.0
 	gopkg.in/yaml.v2 v2.4.0
-	k8s.io/api v0.36.0
-	k8s.io/apimachinery v0.36.0
-	k8s.io/apiserver v0.36.0
-	k8s.io/cli-runtime v0.36.0
+	k8s.io/api v0.36.1
+	k8s.io/apimachinery v0.36.1
+	k8s.io/apiserver v0.36.1
+	k8s.io/cli-runtime v0.36.1
 	k8s.io/client-go v12.0.0+incompatible
-	k8s.io/kube-aggregator v0.36.0
-	k8s.io/kubectl v0.36.0
+	k8s.io/kube-aggregator v0.36.1
+	k8s.io/kubectl v0.36.1
 	k8s.io/utils v0.0.0-20260210185600-b8788abfbbc2
 	sigs.k8s.io/cluster-api v1.12.2
 	sigs.k8s.io/yaml v1.6.0
@@ -119,28 +110,28 @@ require (
 	go.opentelemetry.io/otel/trace v1.43.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/mod v0.35.0 // indirect
-	golang.org/x/net v0.53.0 // indirect
+	golang.org/x/mod v0.36.0 // indirect
+	golang.org/x/net v0.54.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
-	golang.org/x/sys v0.43.0 // indirect
-	golang.org/x/term v0.42.0 // indirect
-	golang.org/x/text v0.36.0 // indirect
+	golang.org/x/sys v0.44.0 // indirect
+	golang.org/x/term v0.43.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
-	golang.org/x/tools v0.44.0 // indirect
+	golang.org/x/tools v0.45.0 // indirect
 	google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.13.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/apiextensions-apiserver v0.36.0 // indirect
-	k8s.io/code-generator v0.36.0 // indirect
-	k8s.io/component-base v0.36.0 // indirect
-	k8s.io/component-helpers v0.36.0 // indirect
+	k8s.io/code-generator v0.36.1 // indirect
+	k8s.io/component-base v0.36.1 // indirect
+	k8s.io/component-helpers v0.36.1 // indirect
 	k8s.io/gengo v0.0.0-20250130153323-76c5745d3511 // indirect
 	k8s.io/gengo/v2 v2.0.0-20250922181213-ec3ebc5fd46b // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20260317180543-43fb72c5454a // indirect
-	k8s.io/streaming v0.36.0 // indirect
+	k8s.io/streaming v0.36.1 // indirect
 	sigs.k8s.io/cli-utils v0.37.2 // indirect
 	sigs.k8s.io/json v0.0.0-20250730193827-2d320260d730 // indirect
 	sigs.k8s.io/kustomize/api v0.21.1 // indirect
