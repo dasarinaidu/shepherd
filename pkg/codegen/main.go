@@ -105,6 +105,7 @@ func main() {
 					networkingv1.IngressClass{},
 					networkingv1.NetworkPolicy{},
 				},
+				OutputControllerPackageName: "networking",
 			},
 			rbacv1.GroupName: {
 				Types: []interface{}{

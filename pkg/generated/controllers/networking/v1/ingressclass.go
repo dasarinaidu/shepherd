@@ -1,5 +1,5 @@
 /*
-Copyright 2025 Rancher Labs, Inc.
+Copyright 2026 Rancher Labs, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -20,20 +20,20 @@ package v1
 
 import (
 	"github.com/rancher/shepherd/pkg/wrangler/pkg/generic"
-	networkingv1 "k8s.io/api/networking/v1"
+	v1 "k8s.io/api/networking/v1"
 )
 
 // IngressClassController interface for managing IngressClass resources.
 type IngressClassController interface {
-	generic.NonNamespacedControllerInterface[*networkingv1.IngressClass, *networkingv1.IngressClassList]
+	generic.NonNamespacedControllerInterface[*v1.IngressClass, *v1.IngressClassList]
 }
 
 // IngressClassClient interface for managing IngressClass resources in Kubernetes.
 type IngressClassClient interface {
-	generic.NonNamespacedClientInterface[*networkingv1.IngressClass, *networkingv1.IngressClassList]
+	generic.NonNamespacedClientInterface[*v1.IngressClass, *v1.IngressClassList]
 }
 
 // IngressClassCache interface for retrieving IngressClass resources in memory.
 type IngressClassCache interface {
-	generic.NonNamespacedCacheInterface[*networkingv1.IngressClass]
+	generic.NonNamespacedCacheInterface[*v1.IngressClass]
 }
