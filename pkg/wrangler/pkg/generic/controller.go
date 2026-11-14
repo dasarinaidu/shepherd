@@ -8,12 +8,15 @@ import (
 	"time"
 
 	"github.com/rancher/lasso/pkg/controller"
+	"github.com/rancher/shepherd/extensions/defaults"
 	"github.com/rancher/shepherd/pkg/session"
+	"github.com/sirupsen/logrus"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
@@ -301,9 +304,31 @@ func (c *Controller[T, TList]) Create(obj T) (T, error) {
 		if namespace != "" {
 			displayName = namespace + "/" + name
 		}
-		gvk := obj.GetObjectKind().GroupVersionKind()
 
-		return fmt.Errorf("unable to delete (%v) %v: %w", gvk, displayName, err)
+		if err != nil {
+			return fmt.Errorf("unable to delete (%v) %v: %w", c.gvk, displayName, err)
+		}
+
+		var lastGetErr error
+
+		waitErr := wait.PollUntilContextTimeout(context.TODO(), defaults.FiveHundredMillisecondTimeout, defaults.FiveSecondTimeout, true, func(ctx context.Context) (bool, error) {
+			getErr := c.embeddedClient.Get(ctx, namespace, name, reflect.New(c.objType).Interface().(T), metav1.GetOptions{})
+
+			if errors.IsNotFound(getErr) || errors.IsForbidden(getErr) {
+				return true, nil
+			}
+
+			lastGetErr = getErr
+
+			return false, nil
+		})
+		if waitErr != nil && lastGetErr != nil {
+			logrus.Warnf("(%v) %v was deleted but could not be read back to confirm it is gone (last read error: %v)", c.gvk, displayName, lastGetErr)
+		} else if waitErr != nil {
+			logrus.Warnf("(%v) %v was deleted but is still present after %v", c.gvk, displayName, defaults.FiveSecondTimeout)
+		}
+
+		return nil
 	})
 
 	return result, nil

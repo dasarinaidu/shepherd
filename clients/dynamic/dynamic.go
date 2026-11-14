@@ -6,12 +6,14 @@ import (
 
 	"k8s.io/client-go/rest"
 
+	"github.com/rancher/shepherd/extensions/defaults"
 	"github.com/rancher/shepherd/pkg/session"
 	"github.com/sirupsen/logrus"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/dynamic"
 )
 
@@ -117,7 +119,30 @@ func (c *ResourceClient) Create(ctx context.Context, obj *unstructured.Unstructu
 			}
 			gvk := unstructuredObj.GetObjectKind().GroupVersionKind()
 
-			return fmt.Errorf("unable to delete (%v) %v: %w", gvk, name, err)
+			if err != nil {
+				return fmt.Errorf("unable to delete (%v) %v: %w", gvk, name, err)
+			}
+
+			var lastGetErr error
+
+			waitErr := wait.PollUntilContextTimeout(context.TODO(), defaults.FiveHundredMillisecondTimeout, defaults.FiveSecondTimeout, true, func(ctx context.Context) (bool, error) {
+				_, getErr := c.Get(ctx, unstructuredObj.GetName(), metav1.GetOptions{}, subresources...)
+
+				if errors.IsNotFound(getErr) || errors.IsForbidden(getErr) {
+					return true, nil
+				}
+
+				lastGetErr = getErr
+
+				return false, nil
+			})
+			if waitErr != nil && lastGetErr != nil {
+				logrus.Warnf("(%v) %v was deleted but could not be read back to confirm it is gone (last read error: %v)", gvk, name, lastGetErr)
+			} else if waitErr != nil {
+				logrus.Warnf("(%v) %v was deleted but is still present after %v", gvk, name, defaults.FiveSecondTimeout)
+			}
+
+			return nil
 		})
 	}
 
